@@ -1,0 +1,8 @@
+PIC LCD Library
+
+Ported from Arduino LCD Library by Ivan de Jesus Deras ideras@gmail.com
+You can find the original library at 
+
+https://bitbucket.org/fmalpartida/new-liquidcrystal/wiki/Home
+
+Tested only on PIC16F887 !
