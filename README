@@ -1,6 +1,12 @@
 PIC LCD Library
 
-Ported from Arduino LCD Library by Ivan de Jesus Deras ideras@gmail.com
+Welcome to the LCD Library for PIC. It is a derivate of the original LiquidCrystal Library as sourced in the Arduino SDK. 
+It has been ported to PIC by Ivan de Jesus Deras (ideras@gmail.com).  As the original library this one is extendable if need be.
+
+It supports most Hitachi HD44780 based LCDs, or compatible, connected to any project using 4bit mode only.
+
+This port doesn't support neither Shift Regiter nor I2C IO expander, but it can be easily extended to support them.
+
 You can find the original library at 
 
 https://bitbucket.org/fmalpartida/new-liquidcrystal/wiki/Home
