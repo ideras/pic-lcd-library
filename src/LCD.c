@@ -37,12 +37,6 @@
 
 uint8_t digit[6];
 
-// General LCD commands - generic methods used by the rest of the commands
-// ---------------------------------------------------------------------------
-#define LCD_send(this, value, mode) this->send(this, value, mode)
-#define LCD_command(this, value)    LCD_send(this, value, COMMAND)
-#define LCD_write(this, value)      LCD_send(this, value, DATA)
-
 // PUBLIC METHODS
 // ---------------------------------------------------------------------------
 // When the display powers up, it is configured as follows:
@@ -60,92 +54,11 @@ uint8_t digit[6];
 //    I/D = 1; Increment by 1 
 //    S = 0; No shift 
 //
-// Note, however, that resetting the Arduino doesn't reset the LCD, so we
-// can't assume that its in that state when a sketch starts (and the
-// LiquidCrystal constructor is called).
+// Note, however, that resetting the microcontroller doesn't reset the LCD, so we
+// can't assume that its in that state when the program starts (and the
+// LiquidCrystal init method is called).
 // A call to begin() will reinitialize the LCD.
 //
-void LCD_begin(struct LCD *this, uint8_t cols, uint8_t lines, uint8_t dotsize)
-{
-   if (lines > 1) 
-   {
-      this->displayfunction |= LCD_2LINE;
-   }
-   this->numlines = lines;
-   this->cols = cols;
-   
-   // for some 1 line displays you can select a 10 pixel high font
-   // ------------------------------------------------------------
-   if ((dotsize != LCD_5x8DOTS) && (lines == 1)) 
-   {
-      this->displayfunction |= LCD_5x10DOTS;
-   }
-   
-   // SEE PAGE 45/46 FOR INITIALIZATION SPECIFICATION!
-   // according to datasheet, we need at least 40ms after power rises above 2.7V
-   // before sending commands. Arduino can turn on way before 4.5V so we'll wait 
-   // 50
-   // ---------------------------------------------------------------------------
-   __delay_ms (100); // 100ms delay
-   
-   //put the LCD into 4 bit or 8 bit mode
-   // -------------------------------------
-   if (! (this->displayfunction & LCD_8BITMODE))
-   {
-      // this is according to the hitachi HD44780 datasheet
-      // figure 24, pg 46
-      
-      // we start in 8bit mode, try to set 4 bit mode
-      LCD_send(this, 0x03, FOUR_BITS);
-      __delay_us(4500); // wait min 4.1ms
-      
-      // second try
-      LCD_send(this,  0x03, FOUR_BITS );
-      __delay_us(4500); // wait min 4.1ms
-      
-      // third go!
-      LCD_send(this,  0x03, FOUR_BITS );
-      __delay_us(150);
-      
-      // finally, set to 4-bit interface
-      LCD_send(this,  0x02, FOUR_BITS );
-   } 
-   else 
-   {
-      // this is according to the hitachi HD44780 datasheet
-      // page 45 figure 23
-      
-      // Send function set command sequence
-      LCD_command(this, LCD_FUNCTIONSET | this->displayfunction);
-      __delay_us(4500);  // wait more than 4.1ms
-      
-      // second try
-      LCD_command(this, LCD_FUNCTIONSET | this->displayfunction);
-      __delay_us(150);
-      
-      // third go
-      LCD_command(this, LCD_FUNCTIONSET | this->displayfunction);
-   }
-
-   // finally, set # lines, font size, etc.
-   LCD_command(this, LCD_FUNCTIONSET | this->displayfunction);
-   
-   // turn the display on with no cursor or blinking default
-   this->displaycontrol = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;
-   LCD_display(this);
-   
-   // clear the LCD
-   LCD_clear(this);
-   
-   // Initialize to default text direction (for romance languages)
-   this->displaymode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
-   // set the entry mode
-   LCD_command(this, LCD_ENTRYMODESET | this->displaymode);
-
-   LCD_backlight(this);
- 
-
-}
 
 // Common LCD Commands
 // ---------------------------------------------------------------------------
@@ -282,7 +195,7 @@ void LCD_createChar(struct LCD *this, uint8_t location, uint8_t charmap[])
    location &= 0x7;            // we only have 8 locations 0-7
    
    LCD_command(this, LCD_SETCGRAMADDR | (location << 3));
-   __delay_us(30);
+   __delay_us(40);
    
    for (i=0; i<8; i++)
    {
@@ -292,34 +205,16 @@ void LCD_createChar(struct LCD *this, uint8_t location, uint8_t charmap[])
 }
 
 //
-// Switch on the backlight
-void LCD_backlight(struct LCD *this)
-{
-    //this->im->setBacklight(this, 255);
-    __delay_us(40);
-}
-
-//
-// Switch off the backlight
-void LCD_noBacklight(struct LCD *this)
-{
-   //this->im->setBacklight(this, 0);
-    __delay_us(40);
-}
-
-//
 // Switch fully on the LCD (backlight and LCD)
 void LCD_on(struct LCD *this)
 {
    LCD_display(this);
-   LCD_backlight(this);
 }
 
 //
 // Switch fully off the LCD (backlight and LCD) 
 void LCD_off(struct LCD *this)
 {
-   LCD_noBacklight(this);
    LCD_noDisplay(this);
 }
 

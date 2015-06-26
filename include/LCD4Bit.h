@@ -35,9 +35,9 @@
  @discussion This defines how long a command takes to execute by the LCD.
  The time is expressed in micro-seconds.
  */
-#define EXEC_TIME 37
+#define EXEC_TIME 40
 
 struct LCD;
-void LCD4Bit_init(struct LCD *this, uint8_t rs_pin, uint8_t enable_pin, volatile uint8_t *lcd_port);
+void LCD_init(struct LCD *this, uint8_t bitmode, volatile uint8_t *lcd_dport, volatile uint8_t *lcd_cport, uint8_t rs_pin, uint8_t enable_pin);
 
 #endif
