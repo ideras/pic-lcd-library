@@ -1,4 +1,4 @@
-PIC Liquid Crystal Diasplay Library
+PIC Liquid Crystal Display Library
 ===================================
 
 Welcome to the LCD Library for PIC. It is a derivate of the original LiquidCrystal Library as sourced in the Arduino SDK. 
